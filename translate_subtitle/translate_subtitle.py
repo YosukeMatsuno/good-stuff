@@ -52,10 +52,11 @@ class TranslationSRT():
 
 		return result
 
-def find_all_file(path):
+def find_all_file(path, ignore_folder):
+	# ver1.0
 	for root, dirs, files in os.walk(path):
 		yield root
-		if root.find(backup_folder) == -1:
+		if root.find(ignore_folder) == -1:
 			for file in files:
 				yield os.path.join(root, file)
 
@@ -66,7 +67,7 @@ else:
 	suffix = "_{}".format(output)
 
 list_srt = []
-for full_path in find_all_file(target_path):
+for full_path in find_all_file(target_path, backup_folder):
 	split_full_path = os.path.split(full_path)
 	file_path, file_name = split_full_path[0], split_full_path[1]
 	if file_name.find(".srt") != -1 and file_name.find(suffix) == -1:
@@ -92,7 +93,7 @@ if len(list_srt) != 0:
 
 		print("[ PROCESS ] Translating... {}/{}  {}".format(count_loop, len(list_srt), srt["name"]), flush= True)
 
-		sub_set = pysrt.open(srt["path"] + "/" + srt["name"])
+		sub_set = pysrt.open(os.path.join(srt["path"], srt["name"]))
 
 		sub_eng = []
 		for sub in sub_set:
@@ -101,7 +102,7 @@ if len(list_srt) != 0:
 				str_en = "-"
 			sub_eng.append(str_en)
 
-		# avoid limit
+		#avoid maximum word limit
 		stock, result = "", ""
 		count_limit = 0
 		for sub in sub_eng:
@@ -131,8 +132,9 @@ if len(list_srt) != 0:
 		# backup
 		if make_backup_folder:
 			shutil.move(os.path.join(srt["path"], srt["name"]), os.path.join(backup_path, srt["name"]))
-		file_name = srt["name"].split(".")
-		sub_set.save(os.path.join(srt["path"], file_name[0] + suffix + "." + file_name[1]), "utf-8")
+		# generate
+		split_file_name = srt["name"].split(".")
+		sub_set.save(os.path.join(srt["path"], split_file_name[0] + suffix + "." + split_file_name[1]), "utf-8")
 
 	app.close()
 	print("\n[ APP ] Translation and generate new srt file done.")
