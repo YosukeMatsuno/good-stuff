@@ -9,19 +9,17 @@ import shutil
 from selenium import webdriver
 
 
-# Translate Subtitle ver 1.1
+# Translate Subtitle ver1.1
 # PARAMETER ==========================================================================================================
-
 target_path = "/Users/Graph/Desktop/test"
 
 # language combination
 input, output = "en", "ja" # you can find language notation from web address.
 
-dual_subtitle = False
+dual_subtitle = True
 
-make_backup_folder = False
+make_backup_folder = True
 backup_folder = "_backup"
-
 # -------------------------------------------------------------------------------------------------------------------
 limit_amount = 4000 #avoid maximum word limit
 selenium_path = "/Applications/chromedriver"
@@ -30,7 +28,7 @@ url = "https://translate.google.com/?hl=ja#view=home&op=translate&sl={}&tl={}&te
 
 
 class TranslationSRT():
-
+	# ver1.1
 	def __init__(self):
 
 		self.driver = webdriver.Chrome(selenium_path)
@@ -39,23 +37,21 @@ class TranslationSRT():
 
 		self.driver.get(url)
 
+	def close(self):
+
+		self.driver.close()
+
 	def translate(self, text):
 
 		self.driver.get(url)
 
 		element = self.driver.find_element_by_xpath('//*[@id="source"]')
 		self.driver.execute_script("arguments[0].value=arguments[1]", element, text)
-		time.sleep(3)
+		time.sleep(3) #avoid connection delay
 		result = self.driver.find_element_by_xpath('//*[@class="tlid-translation translation"]').text
 
 		return result
 
-if dual_subtitle == True:
-	suffix = "_eng-jp"
-else:
-	suffix = "_jp"
-
-# get all srt file
 def find_all_file(path):
 	for root, dirs, files in os.walk(path):
 		yield root
@@ -63,19 +59,29 @@ def find_all_file(path):
 			for file in files:
 				yield os.path.join(root, file)
 
+
+if dual_subtitle:
+	suffix = "_{}-{}".format(input, output)
+else:
+	suffix = "_{}".format(output)
+
 list_srt = []
-for full_file_path in find_all_file(target_path):
-	split_full_file_path = os.path.split(full_file_path)
-	file_path = split_full_file_path[0]
-	file_name = split_full_file_path[1]
+for full_path in find_all_file(target_path):
+	split_full_path = os.path.split(full_path)
+	file_path, file_name = split_full_path[0], split_full_path[1]
 	if file_name.find(".srt") != -1 and file_name.find(suffix) == -1:
-		file_info = {}
-		file_info["name"] = file_name
-		file_info["path"] = file_path
-		list_srt.append(file_info)
+		list_srt.append({"name": file_name, "path": file_path})
 
 if len(list_srt) != 0:
-	print ("[ APP ] Launching Selenium Chrome...\n", flush= True)
+
+	if make_backup_folder:
+		backup_path = os.path.join(target_path, backup_folder)
+		if not os.path.exists(backup_path):
+			os.mkdir(backup_path)
+	else:
+		backup_path = target_path
+
+	print("[ APP ] Launching Selenium Chrome...\n", flush= True)
 
 	app = TranslationSRT()
 	app.open_page()
@@ -83,13 +89,8 @@ if len(list_srt) != 0:
 	count_loop = 0
 	for srt in list_srt:
 		count_loop += 1
-		# check backup
-		backup_path = target_path + "/" + backup_folder
-		if not os.path.exists(backup_path):
-			os.mkdir(backup_path)
 
-		file_name = srt["name"].split(".")
-		print ("[ PROCESS ] Translating... {}/{}  {}".format(count_loop, len(list_srt), srt["name"]), flush= True)
+		print("[ PROCESS ] Translating... {}/{}  {}".format(count_loop, len(list_srt), srt["name"]), flush= True)
 
 		sub_set = pysrt.open(srt["path"] + "/" + srt["name"])
 
@@ -122,16 +123,18 @@ if len(list_srt) != 0:
 		for index, sub in enumerate(sub_set):
 			subtext_eng = sub_eng[index]
 			subtext_ja = result[index]
-			if dual_subtitle == True:
+			if dual_subtitle:
 				sub.text = subtext_eng + "\n" + subtext_ja
 			else:
 				sub.text = subtext_ja
 
 		# backup
-		shutil.move(srt["path"] + "/" + srt["name"], backup_path + "/" + srt["name"])
-		sub_set.save(srt["path"] + "/" + file_name[0] + suffix + "." + file_name[1], "utf-8")
+		if make_backup_folder:
+			shutil.move(os.path.join(srt["path"], srt["name"]), os.path.join(backup_path, srt["name"]))
+		file_name = srt["name"].split(".")
+		sub_set.save(os.path.join(srt["path"], file_name[0] + suffix + "." + file_name[1]), "utf-8")
 
-	app.driver.close()
-	print ("\n[ APP ] Translation and backup done.")
+	app.close()
+	print("\n[ APP ] Translation and generate new srt file done.")
 else:
-	print ("[ ERROR ] No srt file found.")
+	print("[ ERROR ] No srt file.")
