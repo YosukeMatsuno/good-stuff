@@ -1,10 +1,12 @@
+
+
 # Translate Subtitle
 
 
 ## Summary
 
-Version: 1.1  
-Translate subtitle(.srt) to your native language. Generate single or dual displayed subtitle.
+Translate subtitle(.srt) to your native language. Generate single or dual displayed subtitle.  
+Version: 1.1
 
 Sometime struggling to understand MOOC contents even though with English subtitle.  
 I always watch with English subtitle --> switch to my native language --> back to English subtitle again.  
@@ -18,9 +20,9 @@ Please use with moderation and if need many translation, it would be good to con
 
 ### Use
 
-- Set **subtitle_type** and **target_path**.
-- Check **input**, **output** language notation(default: English(en) -> Japanese(jp))
-- Run
+- Set **target_path** and check **input_lang**, **output_lang** language notation (default: English(en) --> Japanese(ja))  
+- Check option **dual_subtitle**, **make_backup_folder** (always keep original srt file)  
+- Run (checked on OS X Yosemite 10.10.5)
 
 ### Reference
 

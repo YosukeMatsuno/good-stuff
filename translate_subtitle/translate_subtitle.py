@@ -11,10 +11,10 @@ from selenium import webdriver
 
 # Translate Subtitle ver1.1
 # PARAMETER ==========================================================================================================
-target_path = "/Users/Graph/Desktop/test"
+target_path = "/Users/..."
 
 # language combination
-input, output = "en", "ja" # you can find language notation from web address.
+input_lang, output_lang = "en", "ja" # you can find language notation from web address.
 
 dual_subtitle = True
 
@@ -22,8 +22,8 @@ make_backup_folder = True
 backup_folder = "_backup"
 # -------------------------------------------------------------------------------------------------------------------
 limit_amount = 4000 #avoid maximum word limit
-selenium_path = "/Applications/chromedriver"
-url = "https://translate.google.com/?hl=ja#view=home&op=translate&sl={}&tl={}&text=tmp".format(input, output)
+selenium_path = "/Applications/chromedriver" # mac os application path
+url = "https://translate.google.com/#view=home&op=translate&sl={}&tl={}&text=.".format(input_lang, output_lang)
 # ====================================================================================================================
 
 
@@ -62,9 +62,9 @@ def find_all_file(path, ignore_folder):
 
 
 if dual_subtitle:
-	suffix = "_{}-{}".format(input, output)
+	suffix = "_{}-{}".format(input_lang, output_lang)
 else:
-	suffix = "_{}".format(output)
+	suffix = "_{}".format(output_lang)
 
 list_srt = []
 for full_path in find_all_file(target_path, backup_folder):
@@ -93,50 +93,52 @@ if len(list_srt) != 0:
 
 		print("[ PROCESS ] Translating... {}/{}  {}".format(count_loop, len(list_srt), srt["name"]), flush= True)
 
-		sub_set = pysrt.open(os.path.join(srt["path"], srt["name"]))
+		# translate
+		input_srt = pysrt.open(os.path.join(srt["path"], srt["name"]))
 
-		sub_eng = []
-		for sub in sub_set:
-			str_en = sub.text.replace("\n", " ")
-			if str_en.strip() == "":
-				str_en = "-"
-			sub_eng.append(str_en)
+		input_subtitle = []
+		for line in input_srt:
+			line_string = line.text.replace("\n", " ")
+			if line_string.strip() == "":
+				line_string = "-"
+			input_subtitle.append(line_string)
 
 		#avoid maximum word limit
-		stock, result = "", ""
+		stock, output_srt = "", ""
 		count_limit = 0
-		for sub in sub_eng:
-			if count_limit + len(sub) < limit_amount:
-				count_limit += len(sub)
-				stock += sub + "\n"
+		for subtitle in input_subtitle:
+			if count_limit + len(subtitle) < limit_amount:
+				count_limit += len(subtitle)
+				stock += subtitle + "\n"
 			else:
-				result += app.translate(stock) + "\n"
+				output_srt += app.translate(stock) + "\n"
 				count_limit = 0
-				count_limit += len(sub)
+				count_limit += len(subtitle)
 				stock = ""
-				stock += sub + "\n"
+				stock += subtitle + "\n"
 
 		if len(stock) != 0:
-			result += app.translate(stock) + "\n"
+			output_srt += app.translate(stock) + "\n"
 
-		result = result.split("\n")
+		output_srt = output_srt.split("\n")
 
-		for index, sub in enumerate(sub_set):
-			subtext_eng = sub_eng[index]
-			subtext_ja = result[index]
+		for index, subtitle in enumerate(input_srt):
+			subtext_input = input_subtitle[index]
+			subtext_output = output_srt[index]
+
 			if dual_subtitle:
-				sub.text = subtext_eng + "\n" + subtext_ja
+				subtitle.text = subtext_input + "\n" + subtext_output
 			else:
-				sub.text = subtext_ja
+				subtitle.text = subtext_output
 
 		# backup
 		if make_backup_folder:
 			shutil.move(os.path.join(srt["path"], srt["name"]), os.path.join(backup_path, srt["name"]))
 		# generate
 		split_file_name = srt["name"].split(".")
-		sub_set.save(os.path.join(srt["path"], split_file_name[0] + suffix + "." + split_file_name[1]), "utf-8")
+		input_srt.save(os.path.join(srt["path"], split_file_name[0] + suffix + "." + split_file_name[1]), "utf-8")
 
 	app.close()
-	print("\n[ APP ] Translation and generate new srt file done.")
+	print("\n[ APP ] Finish. Translated and generated new srt file.")
 else:
 	print("[ ERROR ] No srt file.")
