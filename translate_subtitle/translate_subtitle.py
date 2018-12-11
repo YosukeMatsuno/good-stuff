@@ -14,7 +14,7 @@ from selenium import webdriver
 target_path = "/Users/..."
 
 # language combination
-input_lang, output_lang = "en", "ja" # you can find language notation from web address.
+input_lang, output_lang = "en", "ja" # you can find language notation from url.
 
 dual_subtitle = True
 
