@@ -3,7 +3,7 @@
 # Translate Subtitle
 
 
-## Summary
+## Overview
 
 Translate subtitle(.srt) to your native language. Generate single or dual displayed subtitle.  
 Version: 1.1
@@ -13,7 +13,7 @@ I always watch with English subtitle --> switch to my native language --> back t
 It's bit cheat way but I think great method to understand each word relationship and boost my learning curve!  
 Good for second language learner like me.
 
-### Use
+### Usage
 
 - Set **target_path** and **input_lang**, **output_lang** language notation. Default: en(English) --> ja(Japanese)
 - Check option **dual_subtitle**, **make_backup_folder**. (always keep original .srt file)
@@ -37,10 +37,10 @@ Please use moderately and if need many translations, it would be good to conside
 
 Reference by t2psyto/translate_srt.py  https://gist.github.com/t2psyto/18f7188415086f7e70c1
 
-## Authors
-
-Yosuke Matsuno
-
-## License
+### License
 
 This project is licensed under the MIT License.
+
+### Authors
+
+Yosuke Matsuno
