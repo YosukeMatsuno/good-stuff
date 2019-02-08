@@ -6,7 +6,7 @@
 ## Overview
 
 Translate subtitle(.srt) to your native language. Generate single or dual displayed subtitle.  
-Version: 1.1
+Version: 1.2
 
 Sometime struggling to understand MOOC contents even though with English subtitle.  
 I always watch with English subtitle --> switch to my native language --> back to English subtitle again.  
