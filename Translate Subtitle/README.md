@@ -10,7 +10,7 @@ Version: 1.2
 
 Sometime struggling to understand MOOC contents even though with English subtitle.  
 I always watch with English subtitle --> switch to my native language --> back to English subtitle again.  
-It's bit cheat way but I think great method to understand each word relationship and boost my learning curve!  
+It's bit cheat way but I think great method to understand each word relationship and boost learning curve!  
 Good for second language learner like me.
 
 ### Usage
@@ -21,12 +21,13 @@ Good for second language learner like me.
 
 ### Sample
 
-<img src="original.png" width="450">   
 Original  
-<img src="single.png" width="450">  
+<img src="original.png" width="450">   
 Single  
+<img src="single.png" width="450">  
+Dual  
 <img src="dual.png" width="450">  
-Dual
+
 
 ### Notice
 
